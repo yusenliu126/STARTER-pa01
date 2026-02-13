@@ -1,4 +1,4 @@
 // card.cpp
-// Author: Your name
+// Author: Yusen Liu
 // Implementation of the classes defined in card.h
 
