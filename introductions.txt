@@ -1,0 +1,220 @@
+Common files for both implementations of the game
+
+    card.cpp, card.h // These files should define any structures needed to represent a single card and associated operators. The classes you define here should be useful for both implementations of the game.
+
+    Makefile // Generates two executables- the first should be called game_set and the second should be called game (the expected output for game_set and game are the same and described later). The key difference is that game_set is the executable obtained by compiling main_set.cpp as a stand-alone program (which implements the game using the std::set container class), while game is the executable obtained from compiling the files main.cpp and card_list.cpp which relies on your custom implementation of a BST.
+
+Implementation 1: implementation of the game using std::set
+
+    main_set.cpp
+
+Implementation 2: implementation of the game using your custom BST
+
+    card_list.cpp, card_list.h // These files should contain your implementation of the binary search tree to store a sequence of cards representing a player’s hand
+    main.cpp
+
+Note: The files main_set.cpp and main.cpp should read in the cards of the two players from input files and put everything together to play the game. The key difference is that main_set.cpp only makes use of the STL std::set container class and the definitions in card.h/cpp to code the game (described later) while main.cpp uses definitions in card.h/cpp and card_list.h/cpp which contain your implementation of a BST (from lab03) modified for the purposes of this assignment. Implement main_set.cpp first!
+
+    Text files used for testing
+
+Create the following files:
+
+    tests.cpp // These files should contain test code for all the classes and methods you used in your game with the custom BST (main.cpp). We recommend at least 5 test cases for each public member function. Test files will be evaluated. Course staff help you more effectively if you show how your program fails on a local test case rather than pointing to test failures on Gradescope.
+
+The game
+
+Alice and Bob are playing a game a bit like Go Fish, although neither of them is very good at it. The players are dealt two sets of cards which are provided in two separate files as inputs to your program. Although the cards in each player’s hand is unique, duplicates exist in the other player’s hand.
+
+Once you have the sets of cards, the game begins. Alice and Bob take turns playing the game. Alice iterates forward through her hand in increasing order of the card values (see next section on how cards are ordered), checking whether Bob has that card. Once a matching card is found, your program should print the line “Alice picked matching card <card value as a number/character>". The card should then be removed from both players hands.
+
+The process then repeats, except this time, Bob looks through his cards starting with the largest card and working towards the smallest card. This means that while the first card Alice finds should be the first shared card (in order), the first card Bob finds should be the last shared card (in order). The game ends once they do not have any cards in common and you should print out the final hands of both players. Note that players do not draw any new cards during this process.
+
+The ordering of cards is described in the next section.
+Card ordering
+
+The ordering of cards is determined first by its suit and then by the value:
+
+    The ordering least to greatest is: clubs, diamonds, spades, hearts. Thus a club of any value is less than a diamond of any value.
+
+    The ordering within each suit is determined by the value from least to greatest as follows: ace, 2, 3, . . . 10, jack, queen, king.
+
+Based on the above two rules, the ordering of the following cards
+
+h 9, c k, s 3, c a, h j, d 3
+
+from smallest to largest would be
+
+c a, c k, d 3, s 3, h 9, h j
+Your approach for the set-based implementation of the game
+
+At the start of the program, you will read in Alice and Bob’s starting hands from two files. The names of these files are provided as command line arguments with Alice’s file in argv[1] and Bob’s in argv[2]. The starter code opens the files for you as ifstream objects, which you can treat much like cin. You should read Alice and Bob’s cards into two binary search trees. In your first implementation of the game in (main_set.cpp), you should use std::set to store each players hand. Define a class and associated operators needed to represent a single card in card.h/cpp. When you run make, you should get an executable game_set that you can test with the text files available to you.
+
+After you have a correct implementation that is based on std::set, test your program with the given input files
+Example run of the program
+
+Contents of alice_cards.txt:
+
+h 3
+s 10
+c a
+c 3
+s 5
+h 10
+d a
+
+Contents of bob_cards.txt:
+
+c 2
+d a
+h 10
+c 3
+d j
+s 10
+h a
+
+Correct output after running make and then running ./game_set alice_cards.txt bob_cards.txt:
+
+Alice picked matching card c 3
+Bob picked matching card h 10
+Alice picked matching card d a
+Bob picked matching card s 10
+
+Alice's cards:
+c a
+s 5
+h 3
+
+Bob's cards:
+c 2
+d j
+h a
+
+Note: a=ace, k=king, q=queen, j=jack
+Approach for the custom BST implementation of the game
+
+In your second implementation of the game, you must implement the binary search trees yourself in card_list.h and card_list.cpp. Don’t worry about balancing the binary search trees (though you can try and optimize this if you like). Your binary search tree class should obey the card ordering rules given above. While implementing this, you may find it helpful to overload the operators ==, <, and > on your card class so that you can easily choose which branches to go down on your binary tree. Note that you need to correctly handle the case of cards with the value 10 (which has two characters) and separately compare the value and suit, so storing the cards as strings is probably not the best approach.
+
+Your card_list.h and card_list.cpp must include a bidirectional iterator for the BST to allow traversal of cards in both forward (inorder, smallest to largest) and reverse (reverse inorder, largest to smallest) directions.
+Iterator Requirements:
+
+Implement a bidirectional Iterator class that supports:
+
+    Forward traversal via operator++ (using an internal successor-finding method)
+    Reverse traversal via operator-- (using an internal predecessor-finding method)
+    Dereferencing via operator* and/or operator-> to access the Card stored at the current position
+
+Provide begin(), end(), rbegin(), and rend() methods in your BST class:
+
+    begin() and end() support forward traversal (smallest to largest)
+    rbegin() and rend() support reverse traversal (largest to smallest)
+
+Your iterator should follow std::set semantics: dereferencing an iterator should give access to a Card (e.g., *it returns a const Card&), not expose internal Node structure. This ensures proper encapsulation.
+Approach for the custom BST implementation of the game
+
+In your second implementation of the game, you must implement the binary search trees yourself in card_list.h and card_list.cpp. Don’t worry about balancing the binary search trees (though you can try and optimize this if you like). Your binary search tree class should obey the card ordering rules given above. While implementing this, you may find it helpful to overload the operators ==, <, and > on your card class so that you can easily choose which branches to go down on your binary tree. Note that you need to correctly handle the case of cards with the value 10 (which has two characters) and separately compare the value and suit, so storing the cards as strings is probably not the best approach.
+
+Your card_list.h and card_list.cpp must include a bidirectional iterator for the BST to allow traversal of cards in both forward (inorder, smallest to largest) and reverse (reverse inorder, largest to smallest) directions.
+Iterator Requirements:
+
+Implement a bidirectional Iterator class that supports:
+
+    Forward traversal via operator++ (using an internal successor-finding method)
+    Reverse traversal via operator-- (using an internal predecessor-finding method)
+    Dereferencing via operator* and/or operator-> to access the Card stored at the current position
+
+Provide begin(), end(), rbegin(), and rend() methods in your BST class:
+
+    begin() and end() support forward traversal (smallest to largest)
+    rbegin() and rend() support reverse traversal (largest to smallest)
+
+Your iterator should follow std::set semantics: dereferencing an iterator should give access to a Card (e.g., *it returns a const Card&), not expose internal Node structure. This ensures proper encapsulation.
+Example Usage of iterators
+
+CardBST alice, bob;
+// Insert cards into each hand...
+
+// Forward iteration (smallest to largest)
+for (auto it = alice.begin(); it != alice.end(); ++it) {
+    std::cout << *it << std::endl; // Prints cards in ascending order
+}
+
+// Reverse iteration (largest to smallest)
+for (auto it = bob.rbegin(); it != bob.rend(); --it) {
+    std::cout << *it << std::endl; // Prints cards in descending order
+}
+
+playGame(alice, bob);
+
+Game Logic Requirements:
+
+Implement a playGame function in card_list.cpp to manage the game logic. This function should:
+
+    Take references to both players’ BST hands as parameters
+    Use only public BST methods (insert, remove, contains, begin, end, rbegin, rend, etc.) and iterators
+    Use operator++ for Alice’s forward traversal and operator-- for Bob’s reverse traversal
+    Access card data only through iterator dereferencing (e.g., *it), not through internal Node pointers
+
+Your main.cpp should call playGame to execute the game after reading cards from input files. The game logic should be very similar to main_set.cpp, just using your custom BST instead of std::set.
+Testing Requirements:
+
+In tests.cpp, include test cases that provide the following coverage:
+
+    BST Public Methods: Include at least 5 test cases for each public member function of your BST class, including insert(), remove(), contains(), and any print/display method. Test cases should cover:
+        Empty tree (e.g., verify contains() returns false).
+        Single node (e.g., verify correct insertion and retrieval).
+        Multiple nodes (e.g., verify correct ordering and removal).
+        Edge cases (e.g., removing a non-existent card, attempting to insert duplicates).
+        Correct memory management (e.g., no leaks after remove() or destructor, verified with Valgrind).
+    Include at least 5 test cases for the Iterator class, covering:
+        Empty tree (verify begin() == end() and rbegin() == rend()).
+        Single node (verify correct node is returned and increment/decrement reaches end).
+        Multiple nodes (verify correct inorder sequence with ++ and reverse inorder sequence with –).
+        Incrementing past the end and decrementing past the reverse end (verify safe behavior).
+        Iterator comparison (verify == and != work correctly).
+    Include at least 3 test cases for the playGame function in tests.cpp, covering:
+        Both players with common cards (verify correct matches and removals).
+        One empty hand (verify early exit).
+        No common cards (verify loop termination).
+
+Correct output after running make and then running ./game alice_cards.txt bob_cards.txt should produce the exact same output as before (when you ran game_set with the given input files).
+
+You should write these tests BEFORE implementing the full game to ensure that your binary search tree works correctly. Debugging one set of code is much easier than debugging two at the same time. This will also ensure that your are correctly separating your binary tree class from the rest of your program logic.
+Requirements
+
+For this assignment, you have flexibility in your design choices (class names, internal structure, helper methods), but your code must meet these requirements:
+
+Two Implementations:
+
+    Implement the game using std::set in main_set.cpp (do this first!)
+    Implement the game using your custom BST in main.cpp with supporting code in card_list.h and card_list.cpp
+
+Card Class (card.h / card.cpp):
+
+    Define a Card class to represent a single playing card
+    Implement comparison operators (==, <, >) following the ordering rules described above
+    Implement operator<< for easy printing (e.g., std::cout << card outputs "c a" or "h 10")
+    This class should be usable by both implementations
+
+BST Class (card_list.h / card_list.cpp):
+
+    Implement a binary search tree that stores Card objects as keys
+    Required public methods: insert, remove, contains, and a method to print all cards in order
+    Include a bidirectional iterator with:
+        operator++ for forward (in-order) traversal
+        operator-- for reverse traversal
+        operator* and/or operator-> for accessing the Card at current position
+        begin(), end(), rbegin(), rend() methods
+    Iterators should provide access to Card data without exposing internal Node structure (follow std::set iterator semantics)
+    Implement proper memory management (destructor, no memory leaks)
+
+Game Logic:
+
+    Implement a playGame function that uses only public BST methods and iterators
+    Do not access Node pointers directly in game logic
+
+Code Quality:
+
+    Readable code with clear variable names and consistent formatting
+    Clean separation between Card, BST, and game logic
+    All dynamically allocated memory properly freed (verified with Valgrind)
+    Each card appears only once per hand (no duplicate handling needed)
